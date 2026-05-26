@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /private/
+
+Sitemap: https://watch21.pages.dev/sitemap.xml
+
+Host: https://watch21.pages.dev
