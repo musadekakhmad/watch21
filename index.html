@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="TCLo8eCwGDc08LgA20E_saAyn0KDRkQBnwEKDw63KB0" />
+  
   <!-- Primary Meta Tags -->
   <title>Watch21 - Free Streaming Movies & TV Shows Online</title>
   <meta name="title" content="Watch21 - Free Streaming Movies & TV Shows Online">
@@ -20,14 +23,14 @@
   <meta property="og:url" content="https://watch21.pages.dev/">
   <meta property="og:title" content="Watch21 - Free Streaming Movies & TV Shows Online">
   <meta property="og:description" content="Watch21 is the best free streaming platform to watch movies and TV shows online. Watch trending movies, popular TV series, and latest releases in HD quality.">
-  <meta property="og:image" content="https://watch21.pages.dev/og-image.jpg">
+  <meta property="og:image" content="https://live.staticflickr.com/65535/55294437768_b2c0f1ed3c_b.jpg">
   
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://watch21.pages.dev/">
   <meta property="twitter:title" content="Watch21 - Free Streaming Movies & TV Shows Online">
   <meta property="twitter:description" content="Watch21 is the best free streaming platform to watch movies and TV shows online. Watch trending movies, popular TV series, and latest releases in HD quality.">
-  <meta property="twitter:image" content="https://watch21.pages.dev/og-image.jpg">
+  <meta property="twitter:image" content="https://live.staticflickr.com/65535/55294437768_b2c0f1ed3c_b.jpg">
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -160,47 +163,107 @@
       cursor: pointer;
     }
     
-    /* Page Title - FIXED PADDING (1cm / 0.7cm) */
+    /* Page Title - Center alignment */
     .page-title {
-      padding: 1.5rem 2rem 0.5rem 2rem;
+      padding: 1rem 2rem 0rem 2rem;
       margin-top: 0.5rem;
       font-size: 1.5rem;
+      text-align: center;
+      color: #e5e5e5;
+      font-weight: 600;
+      letter-spacing: -0.3px;
     }
     
-    /* Movie Grid */
+    /* Movie Grid - 9 posters per row */
     .movie-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 1.5rem;
-      padding: 1.5rem 2rem;
-      max-width: 1600px;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 1rem;
+      padding: 1rem 2rem 1.5rem 2rem;
+      max-width: 100%;
       margin: 0 auto;
-      justify-content: space-between;
+      justify-items: center;
+      align-items: start;
     }
     
-    /* Card Styles */
+    /* Responsive: untuk layar lebih kecil, kurangi jumlah poster */
+    @media (max-width: 1400px) {
+      .movie-grid {
+        grid-template-columns: repeat(7, 1fr);
+      }
+    }
+    
+    @media (max-width: 1100px) {
+      .movie-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .movie-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        padding: 1rem;
+      }
+      .navbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        margin-left: 0;
+      }
+      .search-box input {
+        width: 100%;
+      }
+      .page-title {
+        padding: 1rem 1rem 0rem 1rem;
+        font-size: 1.2rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .movie-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    /* Card */
     .card {
       background: #1f1f1f;
       border-radius: 8px;
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.2s;
+      width: 100%;
     }
-    .card:hover { transform: scale(1.05); }
+    
+    .card:hover {
+      transform: scale(1.05);
+    }
+    
     .card img {
       width: 100%;
       aspect-ratio: 2/3;
       object-fit: cover;
     }
+    
     .card-info {
-      padding: 0.75rem;
+      padding: 0.5rem;
+      text-align: center;
     }
+    
     .card-title {
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-bottom: 0.2rem;
+    }
+    
+    .card-info div:last-child {
+      font-size: 0.7rem;
+      color: #aaa;
     }
     
     /* Load More */
@@ -303,28 +366,6 @@
       border-top: 1px solid #222;
       color: #666;
       font-size: 0.8rem;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .navbar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .search-box {
-        margin-left: 0;
-      }
-      .search-box input {
-        width: 100%;
-      }
-      .movie-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 1rem;
-        padding: 1rem;
-      }
-      .page-title {
-        padding: 1rem 1rem 0.5rem 1rem;
-      }
     }
   </style>
 </head>

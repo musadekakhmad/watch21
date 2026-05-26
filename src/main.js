@@ -16,8 +16,6 @@ let currentGenreName = null;
 let currentQuery = null;
 let movieGenres = [];
 let tvGenres = [];
-let currentContainer = null;
-let currentGrid = null;
 
 // Get element
 const app = document.getElementById('app');
@@ -145,8 +143,6 @@ async function loadContent(grid, append = false) {
     let data;
     let titleText = '';
     
-    console.log('Loading with:', { currentQuery, currentGenreId, currentCategory, currentMediaType });
-    
     if (currentQuery) {
       data = await fetchTMDB('/search/multi', { query: currentQuery, page: currentPage });
       titleText = `Search results for "${currentQuery}"`;
@@ -165,7 +161,7 @@ async function loadContent(grid, append = false) {
     totalPages = data.total_pages;
     const cards = data.results.filter(item => item.media_type !== 'person').map(item => createCard(item));
     
-    // Find or create title element with proper padding
+    // Find or create title element with proper padding and CENTER alignment
     let titleEl = grid.parentElement.querySelector('.page-title');
     if (!titleEl) {
       titleEl = document.createElement('h2');
@@ -173,13 +169,14 @@ async function loadContent(grid, append = false) {
       grid.parentElement.insertBefore(titleEl, grid);
     }
     titleEl.textContent = titleText;
-    // Add proper spacing - padding top 1.5rem (approx 1cm), margin top 0
-    titleEl.style.paddingTop = '1.5rem';
-    titleEl.style.paddingBottom = '0.5rem';
+    titleEl.style.paddingTop = '1rem';
+    titleEl.style.paddingBottom = '0rem';
     titleEl.style.paddingLeft = '2rem';
     titleEl.style.paddingRight = '2rem';
     titleEl.style.marginTop = '0';
     titleEl.style.marginBottom = '0';
+    titleEl.style.textAlign = 'center';
+    titleEl.style.fontWeight = '600';
     
     if (!append) {
       grid.innerHTML = '';
@@ -245,9 +242,6 @@ async function AboutPage() {
       <h2>Best Free Movie Streaming Site</h2>
       <p>Watch21 stands out from other streaming sites because we prioritize user experience. Our interface is clean, fast, and mobile-friendly. We update our content daily with the latest releases and trending titles from TMDB.</p>
       
-      <h2>Popular Categories</h2>
-      <p>Browse movies by genre including Action, Comedy, Drama, Horror, Romance, Sci-Fi, and Thriller. Our TV show collection includes popular series, documentaries, reality shows, and anime.</p>
-      
       <h2>Why Choose Watch21?</h2>
       <ul>
         <li>100% Free - No hidden fees or subscriptions</li>
@@ -255,18 +249,10 @@ async function AboutPage() {
         <li>HD Quality Streaming - Crystal clear video</li>
         <li>Daily Updates - New content added every day</li>
         <li>Mobile Friendly - Watch on any device</li>
-        <li>Fast Streaming - Multiple server options</li>
         <li>Privacy Focused - No tracking or data collection</li>
       </ul>
       
-      <h2>Legal Information</h2>
-      <p>Watch21 is a streaming aggregator. We do not host any video files on our servers. All content is sourced from external third-party streaming platforms. We respect copyright laws and intellectual property rights.</p>
-      
-      <h2>Contact Us</h2>
-      <p>Have questions, suggestions, or copyright concerns? Contact our team at support@watch21.com. We respond to all inquiries within 24 hours.</p>
-      
       <p><strong>Watch21 - Your Gateway to Unlimited Entertainment</strong></p>
-      <p><em>Last updated: May 2026</em></p>
     </div>
   `;
   return container;
@@ -279,14 +265,12 @@ async function DetailPage(type, id) {
   container.innerHTML = '<div style="padding:2rem; text-align:center;">Loading...</div>';
   
   try {
-    const [details, credits, videos] = await Promise.all([
+    const [details, credits] = await Promise.all([
       fetchTMDB(`/${type}/${id}`),
-      fetchTMDB(`/${type}/${id}/credits`),
-      fetchTMDB(`/${type}/${id}/videos`)
+      fetchTMDB(`/${type}/${id}/credits`)
     ]);
     
     const director = credits.crew?.find(m => m.job === 'Director')?.name || 'N/A';
-    const writer = credits.crew?.find(m => m.job === 'Writer')?.name || 'N/A';
     const cast = credits.cast?.slice(0, 10).map(c => c.name).join(', ') || 'N/A';
     const title = details.title || details.name;
     const year = (details.release_date || details.first_air_date || '').slice(0, 4);
@@ -313,9 +297,8 @@ async function DetailPage(type, id) {
             <span>📅 ${releaseDate}</span>
           </div>
           <div style="margin: 1rem 0;"><strong>Genres:</strong> ${genres}</div>
-          <div style="margin: 1rem 0;"><strong>Plot Summary:</strong> ${overview}</div>
+          <div style="margin: 1rem 0;"><strong>Plot:</strong> ${overview}</div>
           <div style="margin: 1rem 0;"><strong>Director:</strong> ${director}</div>
-          ${writer !== 'N/A' ? `<div style="margin: 1rem 0;"><strong>Writer:</strong> ${writer}</div>` : ''}
           <div style="margin: 1rem 0;"><strong>Cast:</strong> ${cast}</div>
           <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
             <button class="trailer-btn" data-type="${type}" data-id="${id}" style="background: #e50914; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; color: white; cursor: pointer; font-weight: bold;">▶ Watch Trailer</button>
@@ -335,7 +318,7 @@ async function DetailPage(type, id) {
     
   } catch (err) {
     console.error(err);
-    container.innerHTML = '<div style="padding:2rem; text-align:center;">Error loading details. Please try again.</div>';
+    container.innerHTML = '<div style="padding:2rem; text-align:center;">Error loading details</div>';
   }
   return container;
 }
@@ -348,32 +331,24 @@ async function TrailerPage(type, id) {
   
   try {
     const videos = await fetchTMDB(`/${type}/${id}/videos`);
-    const trailer = videos.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube') || videos.results?.find(v => v.site === 'YouTube') || videos.results?.[0];
+    const trailer = videos.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube') || videos.results?.[0];
     
     if (trailer?.key) {
       container.innerHTML = `
         <div style="margin-bottom: 1rem;">
           <button class="back-btn" style="background: none; border: none; color: #e50914; cursor: pointer; font-size: 1rem;">← Back to Details</button>
         </div>
-        <h2 style="margin-bottom: 1rem;">Official Trailer</h2>
+        <h2 style="margin-bottom: 1rem; text-align:center;">Official Trailer</h2>
         <div style="position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden;">
-          <iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&rel=0&modestbranding=1" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+          <iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&rel=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allow="autoplay; fullscreen" allowfullscreen></iframe>
         </div>
       `;
       const backBtn = container.querySelector('.back-btn');
       if (backBtn) backBtn.onclick = () => window.history.back();
     } else {
-      container.innerHTML = `
-        <div style="margin-bottom: 1rem;">
-          <button class="back-btn" style="background: none; border: none; color: #e50914; cursor: pointer; font-size: 1rem;">← Back to Details</button>
-        </div>
-        <div style="padding:2rem; text-align:center;">No trailer available for this title</div>
-      `;
-      const backBtn = container.querySelector('.back-btn');
-      if (backBtn) backBtn.onclick = () => window.history.back();
+      container.innerHTML = `<div style="padding:2rem; text-align:center;">No trailer available</div>`;
     }
   } catch (err) {
-    console.error(err);
     container.innerHTML = '<div style="padding:2rem; text-align:center;">Error loading trailer</div>';
   }
   return container;
@@ -389,13 +364,13 @@ async function StreamPage(type, id) {
     </div>
     <h2 style="margin-bottom: 2rem; text-align: center;">Streaming Options</h2>
     <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
-      <button class="stream-source-btn" data-url="https://vidsrc.me/embed/${type}/${id}" style="background: #e50914; padding: 1rem 2rem; border-radius: 8px; color: white; border: none; cursor: pointer; font-weight: bold;">🎬 Stream 1 </button>
-      <button class="stream-source-btn" data-url="https://vidsrc.to/embed/${type}/${id}" style="background: #e50914; padding: 1rem 2rem; border-radius: 8px; color: white; border: none; cursor: pointer; font-weight: bold;">🎬 Stream 2 </button>
+      <button class="stream-source-btn" data-url="https://vidsrc.me/embed/${type}/${id}" style="background: #e50914; padding: 1rem 2rem; border-radius: 8px; color: white; border: none; cursor: pointer; font-weight: bold;">🎬 Stream 1</button>
+      <button class="stream-source-btn" data-url="https://vidsrc.to/embed/${type}/${id}" style="background: #e50914; padding: 1rem 2rem; border-radius: 8px; color: white; border: none; cursor: pointer; font-weight: bold;">🎬 Stream 2</button>
     </div>
     <div id="streamPlayer" style="position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; display: none;">
       <iframe id="streamIframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allow="fullscreen" allowfullscreen></iframe>
     </div>
-    <p style="text-align: center; margin-top: 2rem; color: #888;">⚠️ Watch Now: Click Stream 1 or Stream 2 ⚠️</p>
+    <p style="text-align: center; margin-top: 2rem; color: #888;">⚠️ External player - we do not host content.</p>
   `;
   
   const backBtn = container.querySelector('.back-btn');
@@ -486,7 +461,6 @@ function attachEventListeners() {
       e.preventDefault();
       const media = el.getAttribute('data-media');
       const category = el.getAttribute('data-category');
-      console.log('Category clicked:', media, category);
       currentMediaType = media;
       currentCategory = category;
       currentGenreId = null;
@@ -504,7 +478,6 @@ function attachEventListeners() {
       const media = el.getAttribute('data-media');
       const genreId = el.getAttribute('data-genre-id');
       const genreName = el.getAttribute('data-genre-name');
-      console.log('Genre clicked:', media, genreId, genreName);
       currentMediaType = media;
       currentCategory = 'genre';
       currentGenreId = genreId;
@@ -523,7 +496,6 @@ function attachEventListeners() {
     searchBtn.addEventListener('click', () => {
       const query = searchInput.value.trim();
       if (query) {
-        console.log('Search clicked:', query);
         currentQuery = query;
         currentMediaType = 'all';
         currentCategory = 'trending';
@@ -540,7 +512,6 @@ function attachEventListeners() {
       if (e.key === 'Enter') {
         const query = e.target.value.trim();
         if (query) {
-          console.log('Search enter:', query);
           currentQuery = query;
           currentMediaType = 'all';
           currentCategory = 'trending';
