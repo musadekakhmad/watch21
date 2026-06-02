@@ -1,0 +1,2 @@
+/movie/* /movie/:splat/index.html 200
+/tv/* /tv/:splat/index.html 200

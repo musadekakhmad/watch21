@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Allow: /detail/
-Allow: /about
+
 Sitemap: https://watch21.pages.dev/sitemap.xml

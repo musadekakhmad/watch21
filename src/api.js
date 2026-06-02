@@ -26,5 +26,26 @@ export const getAlternativeTitles = (mediaType, id) => {
 export const getMovieGenres = () => fetchTMDB('/genre/movie/list');
 export const getTvGenres = () => fetchTMDB('/genre/tv/list');
 
+export async function getMovieIds() {
+
+  const pages = [1,2,3,4,5];
+
+  const results = [];
+
+  for (const page of pages) {
+
+    const data =
+      await getMoviesByCategory(
+        'popular',
+        page
+      );
+
+    results.push(
+      ...data.results
+    );
+  }
+
+  return results;
+}
 export const getImageUrl = (path, size = 'w500') => path ? `${IMAGE_BASE}/${size}${path}` : 'https://via.placeholder.com/500x750?text=No+Image';
 export const getBackdropUrl = (path, size = 'original') => path ? `${IMAGE_BASE}/${size}${path}` : 'https://via.placeholder.com/1280x720?text=No+Backdrop';

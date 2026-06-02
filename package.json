@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/generate-ssg.js && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "vite": "^5.0.0"
+    "dotenv": "^17.4.2",
+    "vite": "^8.0.14"
   }
 }
