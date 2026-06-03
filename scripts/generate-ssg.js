@@ -6,7 +6,13 @@ dotenv.config({ path: ".env.local" });
 
 const sitemapUrls = [];
 
-const API_KEY = process.env.VITE_TMDB_API_KEY;
+const API_KEY = process.env.TMDB_API_KEY;
+
+if (!API_KEY) {
+  throw new Error(
+    'TMDB_API_KEY tidak ditemukan'
+  );
+}
 
 async function getPopularMovies(page = 1) {
   const res = await fetch(
