@@ -1,13 +1,22 @@
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
+const BASE_URL = '/api';
 const IMAGE_BASE = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
 const fetchTMDB = async (endpoint, params = {}) => {
-  const url = new URL(`${BASE_URL}${endpoint}`);
-  url.searchParams.append('api_key', API_KEY);
-  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+  const url = new URL(
+    `${BASE_URL}${endpoint}`,
+    window.location.origin
+  );
+
+  Object.entries(params).forEach(([key, value]) => {
+    url.searchParams.append(key, value);
+  });
+
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`TMDB Error ${res.status}`);
+
+  if (!res.ok) {
+    throw new Error(`TMDB Error ${res.status}`);
+  }
+
   return res.json();
 };
 
