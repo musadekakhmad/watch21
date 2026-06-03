@@ -1,11 +1,13 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
 
-  const path = params.path || "";
   const url = new URL(request.url);
 
+  // Ambil path setelah /api/
+  const apiPath = url.pathname.replace(/^\/api\//, "");
+
   const tmdbUrl = new URL(
-    `https://api.themoviedb.org/3/${path}`
+    `https://api.themoviedb.org/3/${apiPath}`
   );
 
   url.searchParams.forEach((value, key) => {
@@ -25,8 +27,7 @@ export async function onRequest(context) {
       status: response.status,
       headers: {
         "Content-Type": "application/json",
-        "Cache-Control":
-          "public, max-age=3600"
+        "Cache-Control": "public, max-age=3600"
       }
     }
   );
