@@ -656,14 +656,14 @@ async function StreamPage(type, id) {
     </div>
     <h2 style="text-align: center; margin-bottom: 2rem;">Streaming Options</h2>
     <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
-      <a id="stream1Link" href="#" class="stream-link" data-stream="1" style="background: #e50914; padding: 1rem 2rem; border-radius: 8px; color: white; text-decoration: none; font-weight: bold; transition: transform 0.2s;">🎬 Stream 1</a>
-      <a id="stream2Link" href="#" class="stream-link" data-stream="2" style="background: #e50914; padding: 1rem 2rem; border-radius: 8px; color: white; text-decoration: none; font-weight: bold; transition: transform 0.2s;">🎬 Stream 2</a>
+      <a id="stream1Link" href="#" class="stream-link" data-stream="1" style="background: #e50914; padding: 1rem 2rem; border-radius: 8px; color: white; text-decoration: none; font-weight: bold; transition: transform 0.2s;">▶️ Stream 1</a>
+      <a id="stream2Link" href="#" class="stream-link" data-stream="2" style="background: #e50914; padding: 1rem 2rem; border-radius: 8px; color: white; text-decoration: none; font-weight: bold; transition: transform 0.2s;">▶️ Stream 2</a>
     </div>
     <div id="streamPlayer" style="position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; display: none;">
       <iframe id="streamIframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allow="fullscreen" allowfullscreen></iframe>
     </div>
     <p style="text-align: center; margin-top: 2rem; font-weight: 500;">
-      <span style="color: #ffaa00;">⚠️</span> <span style="color: white;">Watch Movie Select Stream 1 or Stream 2</span> <span style="color: #ffaa00;">⚠️</span>
+      <span style="color: #ffaa00;">🎞️</span> <span style="color: white;">Watch Movie Select Stream 1 or Stream 2</span> <span style="color: #ffaa00;">🎞️</span>
     </p>
   `;
   
