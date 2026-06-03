@@ -124,7 +124,10 @@ function createCard(item) {
       <div>${year} | ★ ${rating}</div>
     </div>
   `;
-  card.onclick = () => navigateTo(`/detail/${type}/${item.id}`);
+  card.onclick = () =>
+  navigateTo(
+    `/${type}/${slugify(item.title || item.name)}/${item.id}`
+  );
   return card;
 }
 
@@ -443,6 +446,15 @@ async function getStaticDetail(type, id) {
 }
 
 // ==================== DETAIL PAGE ====================
+function slugify(text) {
+  return (text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 async function DetailPage(type, id) {
   const container = document.createElement('div');
   container.className = 'detail-container';
@@ -495,8 +507,15 @@ async function DetailPage(type, id) {
     
     container.innerHTML = `
       <div style="margin-bottom: 1rem; font-size: 0.8rem;">
-        <a href="/" style="color: #e50914; text-decoration: none;">Home</a> > 
-        <span style="color: #aaa;">${title}</span>
+        <a href="/" style="color: #e50914; text-decoration: none;">Home</a>
+>
+<a href="/${type}" style="color:#e50914; text-decoration:none;">
+${type.toUpperCase()}
+</a>
+>
+<span style="color: #aaa;">
+${title}
+</span>
       </div>
       <div style="margin-bottom: 1rem;">
         <button class="back-btn" style="background: none; border: none; color: #e50914; cursor: pointer; font-size: 1rem;">← Back</button>
@@ -528,25 +547,56 @@ async function DetailPage(type, id) {
     const trailerBtn = container.querySelector('.trailer-btn');
     const watchNowLink = container.querySelector('#watchNowLink');
     
-    if (backBtn) backBtn.onclick = () => window.history.back();
-    if (trailerBtn) trailerBtn.onclick = () => navigateTo(`/trailer/${type}/${id}`);
-    if (watchNowLink) {
-      watchNowLink.onclick = (e) => {
-        e.preventDefault();
-        const smartLink = getSmartLinkForTitle(titleId, title);
-        window.open(smartLink, '_blank');
-        setTimeout(() => {
-          navigateTo(`/stream/${type}/${id}`);
-        }, 150);
-      };
-    }
-    
-    container.querySelectorAll('.related-card').forEach(card => {
-      card.onclick = () => {
-        const movieId = card.getAttribute('data-id');
-        navigateTo(`/detail/${type}/${movieId}`);
-      };
-    });
+    if (backBtn) {
+  backBtn.onclick = () => window.history.back();
+}
+
+if (trailerBtn) {
+  trailerBtn.onclick = () =>
+    navigateTo(`/trailer/${type}/${id}`);
+}
+
+if (watchNowLink) {
+  watchNowLink.onclick = (e) => {
+    e.preventDefault();
+
+    const smartLink =
+      getSmartLinkForTitle(titleId, title);
+
+    window.open(
+      smartLink,
+      '_blank'
+    );
+
+    setTimeout(() => {
+      navigateTo(
+        `/stream/${type}/${id}`
+      );
+    }, 150);
+  };
+}
+
+container
+  .querySelectorAll('.related-card')
+  .forEach(card => {
+
+    card.onclick = () => {
+
+      const movieId =
+        card.getAttribute('data-id');
+
+      const movieTitle =
+        card.querySelector(
+          'div'
+        )?.textContent || '';
+
+      navigateTo(
+  `/${type}/${slugify(title)}/${id}`
+);
+
+    };
+
+  });
     
   } catch (err) {
     console.error(err);
@@ -773,34 +823,105 @@ window.navigateTo = async function(path) {
 };
 
 async function route() {
+
   const path = window.location.pathname;
   const appElement = document.getElementById('app');
-  
+
   appElement.innerHTML = await renderNavbar();
-  
+
   let content = null;
-  
+
   if (path === '/' || path === '') {
+
     content = await HomePage();
-  } else if (path === '/about') {
-    content = await AboutPage();
-  } else if (path.startsWith('/detail/')) {
-    const parts = path.split('/');
-    content = await DetailPage(parts[2], parts[3]);
-  } else if (path.startsWith('/trailer/')) {
-    const parts = path.split('/');
-    content = await TrailerPage(parts[2], parts[3]);
-  } else if (path.startsWith('/stream/')) {
-    const parts = path.split('/');
-    content = await StreamPage(parts[2], parts[3]);
-  } else {
-    content = await HomePage();
+
   }
-  
+
+  else if (path === '/about') {
+
+    content = await AboutPage();
+
+  }
+
+  // SEO URL MOVIE
+  else if (path.startsWith('/movie/')) {
+
+    const parts = path.split('/');
+
+    const id = parts[3];
+
+    if (id) {
+      content = await DetailPage(
+        'movie',
+        id
+      );
+    }
+
+  }
+
+  // SEO URL TV
+  else if (path.startsWith('/tv/')) {
+
+    const parts = path.split('/');
+
+    const id = parts[3];
+
+    if (id) {
+      content = await DetailPage(
+        'tv',
+        id
+      );
+    }
+
+  }
+
+  // URL LAMA (BACKWARD COMPATIBILITY)
+  else if (
+  path.startsWith('/movie/') ||
+  path.startsWith('/tv/')
+) {
+  const parts = path.split('/');
+
+  const type = parts[1];
+  const id = parts[3];
+
+  content = await DetailPage(type, id);
+}
+
+  else if (path.startsWith('/trailer/')) {
+
+    const parts = path.split('/');
+
+    content = await TrailerPage(
+      parts[2],
+      parts[3]
+    );
+
+  }
+
+  else if (path.startsWith('/stream/')) {
+
+    const parts = path.split('/');
+
+    content = await StreamPage(
+      parts[2],
+      parts[3]
+    );
+
+  }
+
+  else {
+
+    content = await HomePage();
+
+  }
+
   appElement.appendChild(content);
   appElement.appendChild(renderFooter());
+
   attachEventListeners();
   addBackToTopButton();
+
 }
 
 // ==================== INITIALIZE ====================
